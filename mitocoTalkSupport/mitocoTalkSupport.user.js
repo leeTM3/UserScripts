@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         mitoco Talk Support
 // @namespace    https://github.com/leeTM3/
-// @version      0.1
+// @version      0.2
 // @description  MITOCOのトークに機能追加
 // @author       Lee™
 // @match        https://terrasky.lightning.force.com/TSMNTBS/*
@@ -28,6 +28,7 @@
     var ms_favDialog = document.createElement ('dialog');
     ms_favDialog.innerHTML = `
   <h2>制御したいルーム名をカンマ区切りで入力してください</h2>
+  <br>
   <form method="dialog">
       <label for="name">ピン留め: </label><br>
       <input type="name" id="${pinList_name}" value="${pinList}"/><br>
