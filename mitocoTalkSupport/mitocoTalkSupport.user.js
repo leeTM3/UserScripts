@@ -2,7 +2,7 @@
 // @name         mitoco Talk Support
 // @namespace    https://github.com/leeTM3/
 // @version      0.2
-// @description  MITOCOのトークに機能追加
+// @description  mitocoのトークに機能追加
 // @author       Lee™
 // @match        https://terrasky.lightning.force.com/TSMNTBS/*
 // @grant        none
@@ -39,6 +39,7 @@
       <button value="save">Save</button>
     </menu>
   </form>`;
+    
     ms_favDialog.addEventListener('close', function onClose() {
         if(ms_favDialog.returnValue==="save"){
             localStorage.setItem(pinList_name,document.getElementById(pinList_name).value);
