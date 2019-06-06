@@ -1,78 +1,53 @@
 // ==UserScript==
-// @name         mitoco Talk Support
+// @name         mitoco Support
 // @namespace    https://github.com/leeTM3/
-// @version      0.2
-// @description  mitocoのトークに機能追加
+// @version      0.3
+// @description  mitocoに機能追加
 // @author       Lee™
 // @match        https://terrasky.lightning.force.com/TSMNTBS/*
-// @grant        none
+// @grant        GM_addStyle
 // ==/UserScript==
 
 (function() {
     'use strict';
 
-    const pinList_name = "ms_pinList";
-    const blockList_name = "ms_blockList";
+    const PINLIST_NAME = "ms_pinList";
+    const BLOCKLIST_NAME = "ms_blockList";
+    const WEEKEND_BLOCK_NAME = "ms_weekend_block";
 
-    var blockList = (localStorage.getItem(blockList_name) || '').split(",");
-    var pinList = (localStorage.getItem(pinList_name) || '').split(",");
+    var blockList = (localStorage.getItem(BLOCKLIST_NAME) || '').split(",");
+    var pinList = (localStorage.getItem(PINLIST_NAME) || '').split(",");
+    var isWeekend_block = localStorage.getItem(WEEKEND_BLOCK_NAME)==null?true:localStorage.getItem(WEEKEND_BLOCK_NAME).toLowerCase() === "true";
+
+    if(isWeekend_block){
+        blockWeekend();
+    }
+    glowBBSUnread();
+
 
     //改変処理の挿入は利用できるイベントが無いのでMutationObserverで。
-    //パフォーマンスを懸念してたが、意外と20回弱しかコールされていない
     var option = { childList: true, subtree: true};
-    var observer = new MutationObserver(roomFilter);
+    var observer = new MutationObserver(mutationFilter);
     observer.observe(document.body, option);
     var init = false;
 
-    //設定ダイアログの作成
-    var ms_favDialog = document.createElement ('dialog');
-    ms_favDialog.innerHTML = `
-  <h2>制御したいルーム名をカンマ区切りで入力してください</h2>
-  <br>
-  <form method="dialog">
-      <label for="name">ピン留め: </label><br>
-      <input type="name" id="${pinList_name}" value="${pinList}"/><br>
-      <label for="pwd">非表示: </label><br>
-      <input type="text" id="${blockList_name}" value="${blockList}"/><br>
-    <menu>
-      <button value="cancel">Cancel</button>
-      <button value="save">Save</button>
-    </menu>
-  </form>`;
-    
-    ms_favDialog.addEventListener('close', function onClose() {
-        if(ms_favDialog.returnValue==="save"){
-            localStorage.setItem(pinList_name,document.getElementById(pinList_name).value);
-            localStorage.setItem(blockList_name,document.getElementById(blockList_name).value);
-            location.reload();
-        }
-    });
+    initSettingDialog();
 
-    document.body.appendChild(ms_favDialog);
-    window.ms_favDialog=ms_favDialog;
-
-    function roomFilter(mutation){
+    function mutationFilter(mutation){
         mutation.forEach(function(m) {
             var nodes = m.addedNodes;
             var tgt = m.target;
             for(var i=0; i<nodes.length; i++) {
+//                if(nodes[i].querySelectorAll && nodes[i].querySelectorAll(".onHeader").length > 0){
+//                }
                 if (nodes[i].classList && nodes[i].classList.contains("TSMNTCLBCOM_GroupListItem")) {
-                    if(!init){
-                        //設定ダイアログのIDを設置
-                        var createRoomButton = document.querySelectorAll(".roomList .listAddButton");
-                        var tmpDiv= document.createElement ('span');
-                        tmpDiv.innerHTML= '<a href="#" style="font-size: 20px;margin-left: 10px;">🔧</a>';
-                        tmpDiv.onclick = function() { openSettingDialog(); return false};
-                        createRoomButton[0].appendChild(tmpDiv);
-                        init = true;
-                    }
+                    //トーク関連の処理
                     blockRooms(nodes[i]);
                     pinRoooms(nodes[i]);
                 }
             }
         });
     }
-
     function blockRooms(elm){
         if(blockList.indexOf(elm.innerText) >= 0){
             elm.style.display = "none";
@@ -90,11 +65,69 @@
             observer.observe(document.body, option);
         }
     }
-    function openSettingDialog(){
-        if (typeof ms_favDialog.showModal === "function") {
-            ms_favDialog.showModal();
-        } else {
-            alert("The dialog API is not supported by this browser");
-        }
+
+    function initSettingDialog(){
+        //設定ダイアログの作成
+        var ms_favDialog = document.createElement ('dialog');
+        ms_favDialog.innerHTML = `
+<h2>制御したいルーム名をカンマ区切りで入力してください</h2>
+<br>
+<form method="dialog">
+<label>トークピン留め: </label><br>
+<input type="text" id="${PINLIST_NAME}" value="${pinList}"/><br>
+<label>トーク非表示: </label><br>
+<input type="text" id="${BLOCKLIST_NAME}" value="${blockList}"/><br>
+<label>カレンダー週末非表示: </label><br>
+<input type="checkbox" id="${WEEKEND_BLOCK_NAME}" ${isWeekend_block?"checked":""}/><br>
+<menu>
+<button value="cancel">Cancel</button>
+<button value="save">Save</button>
+</menu>
+</form>`;
+
+        ms_favDialog.addEventListener('close', function onClose() {
+            if(ms_favDialog.returnValue==="save"){
+                localStorage.setItem(PINLIST_NAME,document.getElementById(PINLIST_NAME).value);
+                localStorage.setItem(BLOCKLIST_NAME,document.getElementById(BLOCKLIST_NAME).value);
+                localStorage.setItem(WEEKEND_BLOCK_NAME,document.getElementById(WEEKEND_BLOCK_NAME).checked);
+                location.reload();
+            }
+        });
+
+        document.body.appendChild(ms_favDialog);
+
+        var createRoomButton = document.querySelectorAll(".titleArea.appTitle");
+        var tmpDiv= document.createElement ('span');
+        tmpDiv.innerHTML= '<a href="#" style="font-size: 20px;margin-left: 10px;">🔧</a>';
+        tmpDiv.onclick = function() {
+             ms_favDialog.showModal();
+            return false;
+        };
+        createRoomButton[0].appendChild(tmpDiv);
+        init = true;
+    }
+
+    function blockWeekend(){
+        GM_addStyle(`
+.indexOfWeek-0 , .indexOfWeek-6 {
+    display:none!important;
+}
+.TSMNTCLBCAL_Weekly2 .mainContent>dl>dd:nth-of-type(1),.TSMNTCLBCAL_Weekly2 .mainContent>dl>dd:last-child {
+    display: none!important;
+}
+`);
+    }
+    function glowBBSUnread(){
+        GM_addStyle(`
+@keyframes glowing {
+  0% { box-shadow: 0px 0px 1px 3px #FFFF00; }
+  40% { box-shadow: 0px 0px 10px 3px #FF0000; }
+  60% { box-shadow: 0px 0px 10px 3px #FF0000; }
+  100% { box-shadow: 0px 0px 1px 3pxx #FFFF00; }
+}
+.TSMNTCLBBBS_Portal .indicator.colorSystem.background.red1 {
+  animation: glowing 1500ms infinite;
+}
+`);
     }
 })();
