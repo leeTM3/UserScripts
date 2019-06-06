@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         mitoco Support
 // @namespace    https://github.com/leeTM3/
-// @version      0.3
+// @version      0.4
 // @description  mitocoに機能追加
 // @author       Lee™
 // @match        https://terrasky.lightning.force.com/TSMNTBS/*
@@ -125,7 +125,7 @@
   60% { box-shadow: 0px 0px 10px 3px #FF0000; }
   100% { box-shadow: 0px 0px 1px 3pxx #FFFF00; }
 }
-.TSMNTCLBBBS_Portal .indicator.colorSystem.background.red1 {
+.TSMNTCLBBBS_Portal .indicator.colorSystem.background {
   animation: glowing 1500ms infinite;
 }
 `);
