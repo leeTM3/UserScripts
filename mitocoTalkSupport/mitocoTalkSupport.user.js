@@ -37,9 +37,9 @@
         mutation.forEach(function(m) {
             var nodes = m.addedNodes;
             var tgt = m.target;
-            console.log(m);
+//            console.log(m);
             for(var i=0; i<nodes.length; i++) {
-                console.log(nodes[i]);
+//                console.log(nodes[i]);
 //                if(nodes[i].querySelectorAll && nodes[i].querySelectorAll(".onHeader").length > 0){
 //                }
                 if (nodes[i].classList && nodes[i].classList.contains("TSMNTCLBCOM_GroupListItem")) {
@@ -151,7 +151,6 @@
 .TSMNTCLBBBS_BaseDetailView .statusArea .bottom .stBottomItem{
     flex-direction: row!important;
 }
-/*掲示板、公開日などをコンパクトに*/
 .TSMNTCLBBBS_BaseDetailView .statusArea .bottom .stBottomItem .date{
     margin-left: auto!important;
 }
