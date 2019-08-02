@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         mitoco Support
 // @namespace    https://github.com/leeTM3/
-// @version      0.4
+// @version      0.5
 // @description  mitocoに機能追加
 // @author       Lee™
 // @match        https://terrasky.lightning.force.com/TSMNTBS/*
@@ -37,7 +37,9 @@
         mutation.forEach(function(m) {
             var nodes = m.addedNodes;
             var tgt = m.target;
+            console.log(m);
             for(var i=0; i<nodes.length; i++) {
+                console.log(nodes[i]);
 //                if(nodes[i].querySelectorAll && nodes[i].querySelectorAll(".onHeader").length > 0){
 //                }
                 if (nodes[i].classList && nodes[i].classList.contains("TSMNTCLBCOM_GroupListItem")) {
@@ -115,6 +117,45 @@
 .TSMNTCLBCAL_Weekly2 .mainContent>dl>dd:nth-of-type(1),.TSMNTCLBCAL_Weekly2 .mainContent>dl>dd:last-child {
     display: none!important;
 }
+/*ダイアログ形式に戻す*/
+.mitoco_base .tsModal2 {
+    width: 95%!important;
+/*    height: 95%!important;*/
+    border-radius: 0.5em!important;
+    border: 1px solid rgba(0, 0, 0, .2);
+}
+/*掲示板のポップアップのボタンを拡大*/
+.mitoco_base .tsModal2 .tsModal__footer .tsBtn2{
+    height: auto!important;
+    padding: 8px 23px!important;
+}
+/*カレンダー予定ポップアップのボタンを拡大*/
+.mitoco_base .TSMNTCLBCAL_Popover .tsBtn2{
+    height: auto!important;
+    padding: 8px 23px!important;
+}
+/*カレンダー詳細画面のボタンを拡大*/
+.mitoco_base .TSMNTCLBCAL_EventEditPanel .tsBtn2{
+    height: auto!important;
+    padding: 8px 23px!important;
+}
+/*掲示板、タイトル文字を40から32に*/
+.TSMNTCLBBBS_BaseDetailView .titleArea .title{
+	font-size: 32px!important;
+}
+/*掲示板、タイトル部分をコンパクトに*/
+.TSMNTCLBBBS_BaseDetailView .titleArea{
+    min-height: 100px!important;
+}
+/*掲示板、公開日などをコンパクトに*/
+.TSMNTCLBBBS_BaseDetailView .statusArea .bottom .stBottomItem{
+    flex-direction: row!important;
+}
+/*掲示板、公開日などをコンパクトに*/
+.TSMNTCLBBBS_BaseDetailView .statusArea .bottom .stBottomItem .date{
+    margin-left: auto!important;
+}
+
 `);
     }
     function glowBBSUnread(){
